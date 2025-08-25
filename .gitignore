@@ -1,0 +1,11 @@
+# Ignore JuceLibraryCode
+JuceLibraryCode
+
+# Ignore Builds
+Builds
+
+# Ignore kdev file
+Test_synth.kdev4
+
+# Ignore kdev folder
+.kdev4
