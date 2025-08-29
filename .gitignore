@@ -4,7 +4,7 @@ JuceLibraryCode
 # Ignore Builds
 Builds
 
-# Ignore kdev file
+# Ignore kdev project file
 Neon-taxiway-synth.kdev4
 
 # Ignore kdev folder
