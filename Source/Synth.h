@@ -69,6 +69,10 @@ public:
 
 	void setWaveform(const int i, const int newValue);
 
+	void setOscMix(const float newValue);
+
+	void setOscDetune(const float newValue);
+
 	void setFilterFrequency(double newValue);
 
 	void setFilterResonance(double newValue);
@@ -97,7 +101,8 @@ private:
 
 	AudioBuffer<float> oscillatorBuffer;
 	float velocityLevel = 1.0;
-
+	float oscMix = 0.5f;
+	float oscDetune = 0.0f;
 	LowPass filter;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SimpleSynthVoice)

@@ -7,8 +7,11 @@ bool SimpleSynthVoice::canPlaySound(SynthesiserSound* sound) {
 void SimpleSynthVoice::startNote(int midiNoteNumber, float velocity, SynthesiserSound* sound, int currentPitchWheelPosition) {
 
 	// Cambio frequenza all'oscillatore (il secondo argomento a true indica di NON usare smoothed value)
-	Oscillators[0].setFrequency(MidiMessage::getMidiNoteInHertz(midiNoteNumber), true);
-	Oscillators[1].setFrequency(MidiMessage::getMidiNoteInHertz(midiNoteNumber), true);
+	auto baseFrequency = MidiMessage::getMidiNoteInHertz(midiNoteNumber);
+	auto detuneAmt = oscDetune * 20.0f;
+
+	Oscillators[0].setFrequency(baseFrequency * std::pow(2.0f, detuneAmt / 1200.0f), true);
+	Oscillators[1].setFrequency(baseFrequency * std::pow(2.0f, -detuneAmt / 1200.0f), true);
 
 	// Triggero l'ADSR
 	ampAdsr.noteOn();
@@ -66,8 +69,8 @@ void SimpleSynthVoice::renderNextBlock(AudioBuffer<float>& outputBuffer, int sta
 	Oscillators[1].process(context2);
 
 	// Somma i due buffer nel buffer principale
-	oscillatorBuffer.addFrom(0, 0, tempBuffer1, 0, 0, numSamples, 0.25f);
-	oscillatorBuffer.addFrom(0, 0, tempBuffer2, 0, 0, numSamples, 0.25f);
+	oscillatorBuffer.addFrom(0, 0, tempBuffer1, 0, 0, numSamples, 0.5f * (1 - oscMix));
+	oscillatorBuffer.addFrom(0, 0, tempBuffer2, 0, 0, numSamples, 0.5f * (oscMix));
 
 	filter.processBlock(oscillatorBuffer, filterAdsr);
 
@@ -171,6 +174,14 @@ void SimpleSynthVoice::setWaveform(const int i, const int newValue) {
 		Oscillators[i].initialise([](float x) { return -2.0f * std::abs(x / juce::MathConstants<float>::pi) + 1.0f; });
 		break;
 	}
+}
+
+void SimpleSynthVoice::setOscMix(const float newValue) {
+	oscMix = newValue;
+}
+
+void SimpleSynthVoice::setOscDetune(const float newValue) {
+	oscDetune = newValue;
 }
 
 void SimpleSynthVoice::normalizeSignal(AudioBuffer<float>& oscillatorBuffer, float numSamples) {

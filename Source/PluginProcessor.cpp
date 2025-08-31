@@ -137,6 +137,12 @@ void NeonTaxiwayAudioProcessor::parameterChanged(const String& paramID, float ne
             if (paramID == Parameters::nameWave2)
                 voice->setWaveform(1, newValue);
 
+            if (paramID == Parameters::nameOscMix)
+                voice->setOscMix(newValue);
+
+            if (paramID == Parameters::nameOscDetune)
+                voice->setOscDetune(newValue);
+
             if (paramID == Parameters::nameCutoffFreq)
                 voice->setFilterFrequency(newValue);
 
