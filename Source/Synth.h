@@ -73,6 +73,8 @@ public:
 
 	void setFilterResonance(double newValue);
 
+	void setFilterEnvAmount(double newValue);
+
 private:
 	void normalizeSignal(AudioBuffer<float>& oscillatorBuffer, float numSamples);
 	// La classe dsp::Oscillator può essere inizializzata con una lambda da usare come forma d'onda

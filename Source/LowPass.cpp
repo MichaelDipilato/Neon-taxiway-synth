@@ -21,9 +21,18 @@ void LowPass::processBlock(AudioBuffer<float>& buffer, ADSR& envelope) {
 	AudioBuffer<float> modulatedFreqBuffer(1, numSamples);
 	auto* freqData = modulatedFreqBuffer.getWritePointer(0);
 
+	float envValue = 0.0f;
+	double freqToSubtract = 0.0;
+
 	for (int i = 0; i < numSamples; ++i) {
-		float envValue = envelope.getNextSample();
-		freqData[i] = jmap(static_cast<double>(envValue), 0.0, 1.0, 500.0, frequency);
+
+		if (amount >= 0)
+			envValue = 1 - envelope.getNextSample();
+		else
+			envValue = envelope.getNextSample();
+
+		freqToSubtract = jmap(static_cast<double>(envValue), 0.0, 1.0, 500.0, frequency);
+		freqData[i] = frequency - std::abs(amount) * jlimit(500.0, frequency - 500.0, freqToSubtract);
 	}
 
 	for (int ch = 0; ch < numCh; ++ch) {
@@ -48,6 +57,10 @@ void LowPass::setResonance(double newValue) {
 
 	for (int i = 0; i < MAX_NUM_CH; ++i)
 		svfFilters.getUnchecked(i)->setResonance(resonance);
+}
+
+void LowPass::setEnvAmount(double newValue) {
+	amount = newValue;
 }
 
 void LowPass::reset() {

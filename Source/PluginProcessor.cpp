@@ -142,6 +142,9 @@ void NeonTaxiwayAudioProcessor::parameterChanged(const String& paramID, float ne
 
             if (paramID == Parameters::nameResonance)
                 voice->setFilterResonance(newValue);
+
+            if (paramID == Parameters::nameEnvAmount)
+                voice->setFilterEnvAmount(newValue);
         }
 
 }

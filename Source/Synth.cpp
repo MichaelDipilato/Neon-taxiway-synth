@@ -193,3 +193,7 @@ void SimpleSynthVoice::setFilterFrequency(double newValue) {
 void SimpleSynthVoice::setFilterResonance(double newValue) {
 	filter.setResonance(newValue);
 }
+
+void SimpleSynthVoice::setFilterEnvAmount(double newValue) {
+	filter.setEnvAmount(newValue);
+}

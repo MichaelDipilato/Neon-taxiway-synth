@@ -14,6 +14,7 @@ namespace Parameters {
 	static const String nameFiltRel = "FR";
 	static const String nameCutoffFreq = "CF";
 	static const String nameResonance = "RE";
+	static const String nameEnvAmount = "EA";
 
 	static const int defaultWave = 0;
 	static const float defaultAmpAtk = 0.000f;
@@ -26,6 +27,7 @@ namespace Parameters {
 	static const float defaultFiltRel = 1.000f;
 	static const float defaultCutoffFreq = 1000.0f;
 	static const float defaultResonance = 0.700f;
+	static const float defaultEnvAmount = 1.000f;
 
 	static const float maxRmsTime = 1.0f;
 	static const float minCutoffFreq = 500.0f;
@@ -50,6 +52,7 @@ namespace Parameters {
 		params.push_back(std::make_unique<AudioParameterFloat>(ParameterID(nameFiltRel, id++), "Filter Release (s)", NormalisableRange<float>(0.0f, 10.0f, 0.001f, 0.3f), defaultFiltRel));
 		params.push_back(std::make_unique<AudioParameterFloat>(ParameterID(nameCutoffFreq, id++), "Cutoff Frequency", NormalisableRange<float>(minCutoffFreq, 7500.0f, 1.0f, 0.3f), defaultCutoffFreq));
 		params.push_back(std::make_unique<AudioParameterFloat>(ParameterID(nameResonance, id++), "Filter Resonance", NormalisableRange<float>(0.1f, 2.0f, 0.001f, 0.3f), defaultResonance));
+		params.push_back(std::make_unique<AudioParameterFloat>(ParameterID(nameEnvAmount, id++), "Envelope Amount", NormalisableRange<float>(-1.0f, 1.0f, 0.1f, 1.0f), defaultResonance));
 
 		return { params.begin(), params.end() };
 	}

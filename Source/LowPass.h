@@ -24,6 +24,8 @@ public:
 
 	void setResonance(double newValue);
 
+	void setEnvAmount(double newValue);
+
 	void reset();
 
 private:
@@ -31,6 +33,7 @@ private:
 
 	double frequency;
 	double resonance;
+	double amount;
 	double sampleRate = 44100.0;
 
 	OwnedArray< juce::dsp::StateVariableTPTFilter<float>> svfFilters;
