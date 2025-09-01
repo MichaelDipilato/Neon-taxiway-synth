@@ -73,6 +73,8 @@ public:
 
 	void setOscDetune(const float newValue);
 
+	void setGain(const float newValue);
+
 	void setFilterFrequency(double newValue);
 
 	void setFilterResonance(double newValue);
@@ -103,6 +105,7 @@ private:
 	float velocityLevel = 1.0;
 	float oscMix = 0.5f;
 	float oscDetune = 0.0f;
+	float gain = 1.0f;
 	LowPass filter;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SimpleSynthVoice)

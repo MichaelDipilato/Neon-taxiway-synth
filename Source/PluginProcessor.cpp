@@ -36,8 +36,7 @@ void NeonTaxiwayAudioProcessor::releaseResources() {
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
-bool NeonTaxiwayAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
-{
+bool NeonTaxiwayAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const {
   #if JucePlugin_IsMidiEffect
     juce::ignoreUnused (layouts);
     return true;
@@ -142,6 +141,9 @@ void NeonTaxiwayAudioProcessor::parameterChanged(const String& paramID, float ne
 
             if (paramID == Parameters::nameOscDetune)
                 voice->setOscDetune(newValue);
+
+            if (paramID == Parameters::nameMasterGain)
+                voice->setGain(newValue);
 
             if (paramID == Parameters::nameCutoffFreq)
                 voice->setFilterFrequency(newValue);

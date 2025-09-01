@@ -32,7 +32,7 @@ void LowPass::processBlock(AudioBuffer<float>& buffer, ADSR& envelope) {
 			envValue = envelope.getNextSample();
 
 		freqToSubtract = jmap(static_cast<double>(envValue), 0.0, 1.0, 500.0, frequency);
-		freqData[i] = frequency - std::abs(amount) * jlimit(500.0, frequency - 500.0, freqToSubtract);
+		freqData[i] = frequency - std::abs(amount) * jlimit(0.0, frequency - 500.0, freqToSubtract);
 	}
 
 	for (int ch = 0; ch < numCh; ++ch) {

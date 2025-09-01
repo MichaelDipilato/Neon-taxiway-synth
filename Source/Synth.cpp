@@ -74,13 +74,17 @@ void SimpleSynthVoice::renderNextBlock(AudioBuffer<float>& outputBuffer, int sta
 
 	filter.processBlock(oscillatorBuffer, filterAdsr);
 
+	DBG("RMS B4: " << oscillatorBuffer.getRMSLevel(0,0,numSamples));
+
 	normalizeSignal(oscillatorBuffer, numSamples);
+
+	DBG("RMS After: " << oscillatorBuffer.getRMSLevel(0,0,numSamples));
 
 	// La modulo in ampiezza con l'ADSR
 	ampAdsr.applyEnvelopeToBuffer(oscillatorBuffer, 0, numSamples);
 
 	// Volume proporzionale alla velocity
-	oscillatorBuffer.applyGain(0, numSamples, velocityLevel);
+	oscillatorBuffer.applyGain(0, numSamples, velocityLevel * gain);
 
 	// Copio il segnale generato nel buffer di output considerando la porzione di competenza
 	outputBuffer.addFrom(0, startSample, oscillatorBuffer, 0, 0, numSamples);
@@ -184,13 +188,17 @@ void SimpleSynthVoice::setOscDetune(const float newValue) {
 	oscDetune = newValue;
 }
 
+void SimpleSynthVoice::setGain(const float newValue) {
+	gain = newValue;
+}
+
 void SimpleSynthVoice::normalizeSignal(AudioBuffer<float>& oscillatorBuffer, float numSamples) {
 	auto RMS = oscillatorBuffer.getRMSLevel(0,0,numSamples);
 	auto targetRMS = 0.2f/RMS;
 	auto* bufferData = oscillatorBuffer.getWritePointer(0);
 
-	if (RMS < 0.01f) {
-        return; // oppure imposta un valore di default, o lascia il buffer invariato
+	if (RMS < 0.5f) {
+        return;
     }
 
 	for (int i = 0; i < numSamples; ++i)
