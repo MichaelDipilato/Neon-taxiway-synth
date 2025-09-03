@@ -15,35 +15,35 @@ void LowPass::prepareToPlay(double sr) {
 }
 
 void LowPass::processBlock(AudioBuffer<float>& buffer, ADSR& envelope) {
-	auto numCh = buffer.getNumChannels();
-	auto numSamples = buffer.getNumSamples();
+    const int numCh = buffer.getNumChannels();
+    const int numSamples = buffer.getNumSamples();
 
-	AudioBuffer<float> modulatedFreqBuffer(1, numSamples);
-	auto* freqData = modulatedFreqBuffer.getWritePointer(0);
+    AudioBuffer<float> modulatedFreqBuffer(1, numSamples);
+    auto* freqData = modulatedFreqBuffer.getWritePointer(0);
 
-	float envValue = 0.0f;
-	double freqToSubtract = 0.0;
+    for (int i = 0; i < numSamples; ++i) {
+        float envValue = (amount >= 0.0f)
+            ? 1.0f - envelope.getNextSample()
+            : envelope.getNextSample();
 
-	for (int i = 0; i < numSamples; ++i) {
+        double freqToSubtract = jmap(static_cast<double>(envValue), 0.0, 1.0, 500.0, frequency);
+        double lowerLimit = std::max(0.0, frequency - 500.0);
+        double modulatedFreq = frequency - std::abs(amount) * jlimit(0.0, lowerLimit, freqToSubtract);
 
-		if (amount >= 0)
-			envValue = 1 - envelope.getNextSample();
-		else
-			envValue = envelope.getNextSample();
+        modulatedFreq = jlimit(20.0, sampleRate * 0.499, modulatedFreq);
+        freqData[i] = static_cast<float>(modulatedFreq);
+    }
 
-		freqToSubtract = jmap(static_cast<double>(envValue), 0.0, 1.0, 500.0, frequency);
-		freqData[i] = frequency - std::abs(amount) * jlimit(0.0, frequency - 500.0, freqToSubtract);
-	}
+    for (int ch = 0; ch < numCh; ++ch) {
+        auto* channelData = buffer.getWritePointer(ch);
 
-	for (int ch = 0; ch < numCh; ++ch) {
-		auto* channelData = buffer.getWritePointer(ch);
-
-		for (int i = 0; i < numSamples; ++i) {
-			svfFilters.getUnchecked(ch)->setCutoffFrequency(freqData[i]);
-			channelData[i] = svfFilters.getUnchecked(ch)->processSample(0, channelData[i]);
-		}
-	}
+        for (int i = 0; i < numSamples; ++i) {
+            svfFilters.getUnchecked(ch)->setCutoffFrequency(freqData[i]);
+            channelData[i] = svfFilters.getUnchecked(ch)->processSample(0, channelData[i]);
+        }
+    }
 }
+
 
 void LowPass::setFrequency(double newValue) {
 	frequency = jmin(newValue, sampleRate * 0.499);
