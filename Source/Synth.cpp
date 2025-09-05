@@ -74,11 +74,7 @@ void SimpleSynthVoice::renderNextBlock(AudioBuffer<float>& outputBuffer, int sta
 
 	filter.processBlock(oscillatorBuffer, filterAdsr);
 
-	DBG("RMS B4: " << oscillatorBuffer.getRMSLevel(0,0,numSamples));
-
 	normalizeSignal(oscillatorBuffer, numSamples);
-
-	DBG("RMS After: " << oscillatorBuffer.getRMSLevel(0,0,numSamples));
 
 	// La modulo in ampiezza con l'ADSR
 	ampAdsr.applyEnvelopeToBuffer(oscillatorBuffer, 0, numSamples);

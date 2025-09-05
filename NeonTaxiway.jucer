@@ -7,6 +7,10 @@
   <MAINGROUP id="GxYCRN" name="NeonTaxiway">
     <GROUP id="{3D4D31D0-4B21-1955-57D4-C72BBD93A54B}" name="Source">
       <GROUP id="{482E7EE5-B0FD-AF75-A603-92C92F913ADD}" name="GUI">
+        <FILE id="dx5ynG" name="NeonTaxiwayTheme.cpp" compile="1" resource="0"
+              file="Source/NeonTaxiwayTheme.cpp"/>
+        <FILE id="yFtd4V" name="NeonTaxiwayTheme.h" compile="0" resource="0"
+              file="Source/NeonTaxiwayTheme.h"/>
         <FILE id="U0nyhk" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
         <FILE id="qPvXAQ" name="PluginEditor.cpp" compile="1" resource="0"
               file="Source/PluginEditor.cpp"/>

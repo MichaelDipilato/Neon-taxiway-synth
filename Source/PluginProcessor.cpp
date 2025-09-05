@@ -76,11 +76,11 @@ void NeonTaxiwayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 }
 
 bool NeonTaxiwayAudioProcessor::hasEditor() const {
-    return false;
+    return true;
 }
 
 juce::AudioProcessorEditor* NeonTaxiwayAudioProcessor::createEditor() {
-    return new NeonTaxiwayAudioProcessorEditor (*this);
+    return new NeonTaxiwayAudioProcessorEditor (*this, parameters);
 }
 
 void NeonTaxiwayAudioProcessor::getStateInformation (juce::MemoryBlock& destData) {
