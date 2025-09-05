@@ -87,8 +87,8 @@ void NeonTaxiwayAudioProcessorEditor::paint (juce::Graphics& g) {
         g.drawLine(x, (float)gridBottom, targetX, (float)horizonY, 1.0f);
     }
 
-
-    Font titleFont("Lucida Console", 45.0f, juce::Font::bold | juce::Font::italic);
+    juce::FontOptions titleOptions("Lucida Console", 45.0f, juce::Font::bold | juce::Font::italic);
+    juce::Font titleFont(titleOptions);
     g.setFont(titleFont);
     g.setColour(juce::Colours::red.withAlpha(0.6f));
     g.drawText("NEON TAXIWAY", 22, 17, 540, 50, juce::Justification::topLeft, true);
@@ -96,7 +96,8 @@ void NeonTaxiwayAudioProcessorEditor::paint (juce::Graphics& g) {
     g.setColour(juce::Colours::yellow);
     g.drawText("NEON TAXIWAY", 20, 15, 540, 50, juce::Justification::topLeft, true);
 
-    Font subtitleFont("Lucida Console", 20.0f, juce::Font::italic);
+    juce::FontOptions subtitleOptions("Lucida Console", 20.0f, juce::Font::italic);
+    juce::Font subtitleFont(subtitleOptions);
     g.setFont(subtitleFont);
     g.setColour(juce::Colours::red.withAlpha(0.6f));
     g.drawText("A synth not yet cleared for takeoff...", 22, 60, 740, 20, juce::Justification::left, true);
