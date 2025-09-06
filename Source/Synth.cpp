@@ -99,20 +99,20 @@ void SimpleSynthVoice::prepareToPlay(double sampleRate, int samplesPerBlock) {
 	ampAdsr.setParameters(ampAdsrParams);
 	filterAdsr.setParameters(filterAdsrParams);
 
-	filter.prepareToPlay(sampleRate);
-
 	// Preparo le ProcessSpecs per l'oscillatore ed eventuali altre classi DSP
 	dsp::ProcessSpec spec;
 	spec.maximumBlockSize = samplesPerBlock;
 	spec.sampleRate = sampleRate;
 	spec.numChannels = 1;
 
+	filter.prepareToPlay(sampleRate, spec);
+
 	Oscillators[0].initialise([](float x) { return std::sin(x); });
 	Oscillators[1].initialise([](float x) { return std::sin(x); });
 
 	Oscillators[0].prepare(spec);
 	Oscillators[1].prepare(spec);
-
+		
 	// Se non ho intenzione di generare un segnale intrinsecamente
 	// stereo è inutile calcolare più di un canale. Ne calcolo 1 e
 	// poi nel PluginProcessor lo copio su tutti i canali in uscita

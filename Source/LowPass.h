@@ -7,8 +7,8 @@
 
 class LowPass {
 public:
-	LowPass(double defaultFrequency = 1000.0, double defaultResonance = 0.7)
-		: frequency(defaultFrequency), resonance(defaultResonance) {
+	LowPass(double defaultFrequency = 1000.0, double defaultResonance = 0.7, double defaultAmt = 1.0)
+		: frequency(defaultFrequency), resonance(defaultResonance), amount(defaultAmt) {
 		for (int i = 0; i < MAX_NUM_CH; ++i) {
 			svfFilters.add(std::make_unique<dsp::StateVariableTPTFilter<float>>());
 		}
@@ -16,7 +16,7 @@ public:
 
 	~LowPass() {}
 
-	void prepareToPlay(double sr);
+	void prepareToPlay(double sr, dsp::ProcessSpec spec);
 
 	void processBlock(AudioBuffer<float>& buffer, ADSR& envelope);
 
@@ -29,7 +29,7 @@ public:
 	void reset();
 
 private:
-	void updateCoefficients();
+	float updateModulatedFrequency(ADSR& envelope);
 
 	double frequency;
 	double resonance;
