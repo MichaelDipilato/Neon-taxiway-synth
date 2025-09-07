@@ -19,6 +19,14 @@ private:
 
     void setupDiscreteSlider(Slider& slider, int x, int y, int w, int h, int numSteps);
 
+    void drawGrid(juce::Graphics& g);
+
+    void drawTileAndSubtitle(juce::Graphics& g);
+
+    void drawKnobSectionBoxes(juce::Graphics& g);
+
+    void drawKnobLabels(juce::Graphics& g);
+
     NeonTaxiwayAudioProcessor& audioProcessor;
 
     AudioProcessorValueTreeState& valueTreeState;

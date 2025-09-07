@@ -12,9 +12,9 @@ NeonTaxiwayAudioProcessorEditor::NeonTaxiwayAudioProcessorEditor (NeonTaxiwayAud
     setupSlider(filterDcySlider, 380, 140, 80, 80);
     setupSlider(filterSusSlider, 280, 260, 80, 80);
     setupSlider(filterRelSlider, 380, 260, 80, 80);
-    setupSlider(filterEnvAmtSlider, 480, 140, 80, 80);
+    setupSlider(filterEnvAmtSlider, 580, 200, 80, 80);
     setupSlider(resonanceSlider, 480, 260, 80, 80);
-    setupSlider(cutoffSlider, 580, 200, 80, 80);
+    setupSlider(cutoffSlider, 480, 140, 80, 80);
     setupSlider(ampAtkSlider, 720, 140, 80, 80);
     setupSlider(ampDcySlider, 820, 140, 80, 80);
     setupSlider(ampSusSlider, 720, 260, 80, 80);
@@ -57,10 +57,37 @@ void NeonTaxiwayAudioProcessorEditor::paint (juce::Graphics& g) {
     g.setGradientFill(juce::ColourGradient(juce::Colour(90, 40, 80), 0, 0, juce::Colour(40, 40, 60), getWidth(), getHeight(), false));
     g.fillAll ();
 
-    g.setColour(juce::Colour(0xff8000FF));
+    drawTileAndSubtitle(g);
 
-    g.fillRoundedRectangle(-50.0f, 15.0f, 580.0f, 68.0f, 30.0f);
+    drawGrid(g);
 
+    drawKnobSectionBoxes(g);
+
+    drawKnobLabels(g);
+}
+
+void NeonTaxiwayAudioProcessorEditor::resized() {
+    // This is generally where you'll want to lay out the positions of any
+    // subcomponents in your editor..
+}
+
+void NeonTaxiwayAudioProcessorEditor::setupSlider(Slider& slider, int x, int y, int w, int h) {
+    slider.setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
+    slider.setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
+    addAndMakeVisible(&slider);
+    slider.setBounds(x, y, w, h);
+}
+
+void NeonTaxiwayAudioProcessorEditor::setupDiscreteSlider(Slider& slider, int x, int y, int w, int h, int numSteps) {
+    slider.setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
+    slider.setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
+    slider.setRange(0, numSteps - 1, 1.0);
+    slider.setVelocityBasedMode(false);
+    addAndMakeVisible(&slider);
+    slider.setBounds(x, y, w, h);
+}
+
+void NeonTaxiwayAudioProcessorEditor::drawGrid(juce::Graphics& g) {
     int horizonY = 100;
     int gridBottom = getHeight();
     int vanishingX = getWidth() / 2;
@@ -86,8 +113,14 @@ void NeonTaxiwayAudioProcessorEditor::paint (juce::Graphics& g) {
 
         g.drawLine(x, (float)gridBottom, targetX, (float)horizonY, 1.0f);
     }
+}
 
-    juce::FontOptions titleOptions("Lucida Console", 45.0f, juce::Font::bold | juce::Font::italic);
+void NeonTaxiwayAudioProcessorEditor::drawTileAndSubtitle(juce::Graphics& g) {
+    g.setColour(juce::Colour(0xff8000FF));
+
+    g.fillRoundedRectangle(-50.0f, 15.0f, 580.0f, 68.0f, 30.0f);
+
+    juce::FontOptions titleOptions("Liberation Mono", 45.0f, juce::Font::bold | juce::Font::italic);
     juce::Font titleFont(titleOptions);
     g.setFont(titleFont);
     g.setColour(juce::Colours::red.withAlpha(0.6f));
@@ -96,7 +129,7 @@ void NeonTaxiwayAudioProcessorEditor::paint (juce::Graphics& g) {
     g.setColour(juce::Colours::yellow);
     g.drawText("NEON TAXIWAY", 20, 15, 540, 50, juce::Justification::topLeft, true);
 
-    juce::FontOptions subtitleOptions("Lucida Console", 20.0f, juce::Font::italic);
+    juce::FontOptions subtitleOptions("Liberation Mono", 20.0f, juce::Font::italic);
     juce::Font subtitleFont(subtitleOptions);
     g.setFont(subtitleFont);
     g.setColour(juce::Colours::red.withAlpha(0.6f));
@@ -104,19 +137,23 @@ void NeonTaxiwayAudioProcessorEditor::paint (juce::Graphics& g) {
 
     g.setColour(juce::Colours::yellow);
     g.drawText("A synth not yet cleared for takeoff...", 20, 58, 740, 20, juce::Justification::left, true);
+}
+
+void NeonTaxiwayAudioProcessorEditor::drawKnobSectionBoxes(juce::Graphics& g) {
+    g.setColour(juce::Colours::yellow);
 
     g.drawRoundedRectangle(25, 110, 215, 260, 10.0f, 7.0f);
     g.drawRoundedRectangle(265, 110, 415, 260, 10.0f, 7.0f);
     g.drawRoundedRectangle(705, 110, 215, 260, 10.0f, 7.0f);
 
-    g.setFont(juce::FontOptions(20.0f, juce::Font::bold | juce::Font::italic));
+    g.setFont(juce::FontOptions("Liberation Mono", 20.0f, juce::Font::bold | juce::Font::italic));
 
     g.setColour(juce::Colour(0xff8000FF));
-    g.fillRoundedRectangle(75, 360, 110, 30, 6.0f);
+    g.fillRoundedRectangle(65, 360, 130, 30, 6.0f);
     g.setColour(juce::Colours::red.withAlpha(0.6f));
-    g.drawText("Oscillators", 82, 362, 100, 30, juce::Justification::centred);
+    g.drawText("Oscillators", 72, 362, 120, 30, juce::Justification::centred);
     g.setColour(juce::Colours::yellow);
-    g.drawText("Oscillators", 80, 360, 100, 30, juce::Justification::centred);
+    g.drawText("Oscillators", 70, 360, 120, 30, juce::Justification::centred);
 
     g.setColour(juce::Colour(0xff8000FF));
     g.fillRoundedRectangle(425, 360, 90, 30, 6.0f);
@@ -131,9 +168,11 @@ void NeonTaxiwayAudioProcessorEditor::paint (juce::Graphics& g) {
     g.drawText("Amplifier", 772, 362, 90, 30, juce::Justification::centred);
     g.setColour(juce::Colours::yellow);
     g.drawText("Amplifier", 770, 360, 90, 30, juce::Justification::centred);
+}
 
+void NeonTaxiwayAudioProcessorEditor::drawKnobLabels(juce::Graphics& g) {
     g.setColour (juce::Colours::white);
-    g.setFont (juce::FontOptions (15.0f, juce::Font::bold | juce::Font::italic));
+    g.setFont (juce::FontOptions ("Liberation Mono", 15.0f, juce::Font::bold | juce::Font::italic));
 
 	g.drawText("1st Wave", 35, 120, 90, 20, juce::Justification::centred);
     g.drawText("2nd Wave", 135, 120, 90, 20, juce::Justification::centred);
@@ -143,34 +182,12 @@ void NeonTaxiwayAudioProcessorEditor::paint (juce::Graphics& g) {
     g.drawText("Decay", 380, 120, 80, 20, juce::Justification::centred);
     g.drawText("Sustain", 280, 240, 80, 20, juce::Justification::centred);
     g.drawText("Release", 380, 240, 80, 20, juce::Justification::centred);
-    g.drawText("Amount", 480, 120, 80, 20, juce::Justification::centred);
+    g.drawText("Cutoff", 480, 120, 80, 20, juce::Justification::centred);
     g.drawText("Resonance", 480, 240, 80, 20, juce::Justification::centred);
-    g.drawText("Cutoff", 580, 180, 80, 20, juce::Justification::centred);
+    g.drawText("Amount", 580, 180, 80, 20, juce::Justification::centred);
     g.drawText("Attack", 720, 120, 80, 20, juce::Justification::centred);
     g.drawText("Decay", 820, 120, 80, 20, juce::Justification::centred);
     g.drawText("Sustain", 720, 240, 80, 20, juce::Justification::centred);
     g.drawText("Release", 820, 240, 80, 20, juce::Justification::centred);
     g.drawText("Volume", 820, 0, 80, 20, juce::Justification::centred);
 }
-
-void NeonTaxiwayAudioProcessorEditor::resized() {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
-}
-
-void NeonTaxiwayAudioProcessorEditor::setupSlider(Slider& slider, int x, int y, int w, int h) {
-    slider.setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
-    slider.setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
-    addAndMakeVisible(&slider);
-    slider.setBounds(x, y, w, h);
-}
-
-void NeonTaxiwayAudioProcessorEditor::setupDiscreteSlider(Slider& slider, int x, int y, int w, int h, int numSteps) {
-    slider.setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
-    slider.setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
-    slider.setRange(0, numSteps - 1, 1.0);
-    slider.setVelocityBasedMode(false);
-    addAndMakeVisible(&slider);
-    slider.setBounds(x, y, w, h);
-}
-
