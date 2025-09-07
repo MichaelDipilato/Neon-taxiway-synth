@@ -149,25 +149,25 @@ void NeonTaxiwayAudioProcessorEditor::drawKnobSectionBoxes(juce::Graphics& g) {
     g.setFont(juce::FontOptions("Liberation Mono", 20.0f, juce::Font::bold | juce::Font::italic));
 
     g.setColour(juce::Colour(0xff8000FF));
-    g.fillRoundedRectangle(65, 360, 130, 30, 6.0f);
+    g.fillRoundedRectangle(67, 355, 130, 30, 6.0f);
     g.setColour(juce::Colours::red.withAlpha(0.6f));
-    g.drawText("Oscillators", 72, 362, 120, 30, juce::Justification::centred);
+    g.drawText("Oscillators", 74, 358, 120, 30, juce::Justification::centred);
     g.setColour(juce::Colours::yellow);
-    g.drawText("Oscillators", 70, 360, 120, 30, juce::Justification::centred);
+    g.drawText("Oscillators", 72, 356, 120, 30, juce::Justification::centred);
 
     g.setColour(juce::Colour(0xff8000FF));
-    g.fillRoundedRectangle(425, 360, 90, 30, 6.0f);
+    g.fillRoundedRectangle(427, 355, 90, 30, 6.0f);
     g.setColour(juce::Colours::red.withAlpha(0.6f));
-    g.drawText("Filter", 427, 362, 90, 30, juce::Justification::centred);
+    g.drawText("Filter", 429, 358, 90, 30, juce::Justification::centred);
     g.setColour(juce::Colours::yellow);
-    g.drawText("Filter", 425, 360, 90, 30, juce::Justification::centred);
+    g.drawText("Filter", 427, 356, 90, 30, juce::Justification::centred);
 
     g.setColour(juce::Colour(0xff8000FF));
-    g.fillRoundedRectangle(765, 360, 100, 30, 6.0f);
+    g.fillRoundedRectangle(758, 355, 110, 30, 6.0f);
     g.setColour(juce::Colours::red.withAlpha(0.6f));
-    g.drawText("Amplifier", 772, 362, 90, 30, juce::Justification::centred);
+    g.drawText("Amplifier", 765, 358, 100, 30, juce::Justification::centred);
     g.setColour(juce::Colours::yellow);
-    g.drawText("Amplifier", 770, 360, 90, 30, juce::Justification::centred);
+    g.drawText("Amplifier", 763, 356, 100, 30, juce::Justification::centred);
 }
 
 void NeonTaxiwayAudioProcessorEditor::drawKnobLabels(juce::Graphics& g) {
