@@ -6,96 +6,69 @@ bool SimpleSynthVoice::canPlaySound(SynthesiserSound* sound) {
 
 void SimpleSynthVoice::startNote(int midiNoteNumber, float velocity, SynthesiserSound* sound, int currentPitchWheelPosition) {
 
-	// Cambio frequenza all'oscillatore (il secondo argomento a true indica di NON usare smoothed value)
 	auto baseFrequency = MidiMessage::getMidiNoteInHertz(midiNoteNumber);
 	auto detuneAmt = oscDetune * 20.0f;
 
 	Oscillators[0].setFrequency(baseFrequency * std::pow(2.0f, detuneAmt / 1200.0f), true);
 	Oscillators[1].setFrequency(baseFrequency * std::pow(2.0f, -detuneAmt / 1200.0f), true);
 
-	// Triggero l'ADSR
 	ampAdsr.noteOn();
 	filterAdsr.noteOn();
 
-	// Mi salvo la velocity da usare come volume della nota suonata
 	velocityLevel = velocity;
 }
 
 void SimpleSynthVoice::stopNote(float velocity, bool allowTailOff) {
 
-	// Triggero la fase di release dell'ADSR
 	ampAdsr.noteOff();
 	filterAdsr.noteOff();
 
-	// Se mi chiede di non generare code (o altri casi, tipo se l'ADSR ha già finito la fase di release)
-	// allora segnalo alla classe Synthesiser che questa voce è libera per poter riprodurre altri suoni
 	if (!allowTailOff || (!ampAdsr.isActive() && !filterAdsr.isActive()))
 		clearCurrentNote();
 }
 
 void SimpleSynthVoice::renderNextBlock(AudioBuffer<float>& outputBuffer, int startSample, int numSamples) {
 
-	// Se la voce non è attiva ci si può fermare qui.
-	// In caso si voglia comunque "far trascorrere il tempo" per alcune componenti (ad esempio
-	// far avanzare gli LFO anche mentre la voce non sta suonando), queste operazioni vanno
-	// fatte prima di questo controllo.
 	if (!isVoiceActive())
 		return;
 
-	oscBuffer1.setSize(1, numSamples);
-	oscBuffer2.setSize(1, numSamples);
-
-	// Pulizia del buffer di lavoro
-	// (userò solo i primi "numSamples" del buffer, da sommare poi nel
-	// buffer di output, da startSample, per numSamples campioni)
 	oscillatorBuffer.clear(0, numSamples);
 	oscBuffer1.clear(0, numSamples);
 	oscBuffer2.clear(0, numSamples);
 
-	// Preparazione del ProcessContext per le classi DSP
-	// auto voiceData = oscillatorBuffer.getArrayOfWritePointers();
-	// dsp::AudioBlock<float> audioBlock{ voiceData, 1, (size_t)numSamples };
-	// dsp::ProcessContextReplacing<float> context{ audioBlock };
-	dsp::AudioBlock<float> audioBlock1{ oscBuffer1 };
-	dsp::AudioBlock<float> audioBlock2{ oscBuffer2 };
+	auto voiceData1 = oscBuffer1.getArrayOfWritePointers();
+	auto voiceData2 = oscBuffer2.getArrayOfWritePointers();
+	dsp::AudioBlock<float> audioBlock1{ voiceData1, 1, (size_t)numSamples };
+	dsp::AudioBlock<float> audioBlock2{ voiceData2, 1, (size_t)numSamples };
 
 	dsp::ProcessContextReplacing<float> context1{ audioBlock1 };
 	dsp::ProcessContextReplacing<float> context2{ audioBlock2 };
 
-	// [Solitamente qui ci stanno cose tipo mixer degli oscillatori, filtro e saturazione]
 	Oscillators[0].process(context1);
 	Oscillators[1].process(context2);
 
-	// Somma i due buffer nel buffer principale
 	oscillatorBuffer.addFrom(0, 0, oscBuffer1, 0, 0, numSamples, 0.5f * (1 - oscMix));
 	oscillatorBuffer.addFrom(0, 0, oscBuffer2, 0, 0, numSamples, 0.5f * (oscMix));
 
 	filter.processBlock(oscillatorBuffer, filterAdsr, numSamples);
 
-	// La modulo in ampiezza con l'ADSR
 	ampAdsr.applyEnvelopeToBuffer(oscillatorBuffer, 0, numSamples);
 
-	// Volume proporzionale alla velocity
 	oscillatorBuffer.applyGain(0, numSamples, velocityLevel * gain);
 
-	// Copio il segnale generato nel buffer di output considerando la porzione di competenza
 	outputBuffer.addFrom(0, startSample, oscillatorBuffer, 0, 0, numSamples);
 
-	// Se gli ADSR hanno finito la fase di decay (o se ho altri motivi per farlo)
-	// segno la voce come libera per suonare altre note
 	if (!(ampAdsr.isActive() || filterAdsr.isActive()))
 		clearCurrentNote();
 }
 
 void SimpleSynthVoice::prepareToPlay(double sampleRate, int samplesPerBlock) {
 
-	// Resetto l'ADSR
 	ampAdsr.setSampleRate(sampleRate);
 	filterAdsr.setSampleRate(sampleRate);
 	ampAdsr.setParameters(ampAdsrParams);
 	filterAdsr.setParameters(filterAdsrParams);
 
-	// Preparo le ProcessSpecs per l'oscillatore ed eventuali altre classi DSP
 	dsp::ProcessSpec spec;
 	spec.maximumBlockSize = samplesPerBlock;
 	spec.sampleRate = sampleRate;
@@ -103,15 +76,14 @@ void SimpleSynthVoice::prepareToPlay(double sampleRate, int samplesPerBlock) {
 
 	filter.prepareToPlay(sampleRate, spec);
 
-	Oscillators[0].initialise([](float x) { return std::sin(x); });
-	Oscillators[1].initialise([](float x) { return std::sin(x); });
+	if(!(Oscillators[0].isInitialised() && Oscillators[1].isInitialised())) {
+		setWaveform(0, 0);
+		setWaveform(1, 0);
+	}
 
 	Oscillators[0].prepare(spec);
 	Oscillators[1].prepare(spec);
 		
-	// Se non ho intenzione di generare un segnale intrinsecamente
-	// stereo è inutile calcolare più di un canale. Ne calcolo 1 e
-	// poi nel PluginProcessor lo copio su tutti i canali in uscita
 	oscillatorBuffer.setSize(1, samplesPerBlock);
 	oscBuffer1.setSize(1, samplesPerBlock);
 	oscBuffer2.setSize(1, samplesPerBlock);
