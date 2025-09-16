@@ -82,7 +82,6 @@ public:
 	void setFilterEnvAmount(double newValue);
 
 private:
-	void normalizeSignal(AudioBuffer<float>& oscillatorBuffer, float numSamples);
 	// La classe dsp::Oscillator può essere inizializzata con una lambda da usare come forma d'onda
 	// (x va da -pi a + pi) e con un intero facoltativo che (se presente e diverso da 0) indica alla
 	// classe di usare una lookup table di quelle dimensioni.
@@ -102,6 +101,8 @@ private:
 	ADSR::Parameters filterAdsrParams;
 
 	AudioBuffer<float> oscillatorBuffer;
+	AudioBuffer<float> oscBuffer1;
+	AudioBuffer<float> oscBuffer2;
 	float velocityLevel = 1.0;
 	float oscMix = 0.5f;
 	float oscDetune = 0.0f;

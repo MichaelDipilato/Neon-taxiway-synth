@@ -6,24 +6,24 @@ void LowPass::prepareToPlay(double sr, dsp::ProcessSpec spec) {
 
 	for (int i = 0; i < MAX_NUM_CH; ++i) {
         auto filter = std::make_unique<dsp::StateVariableTPTFilter<float>>();
-			filter->setType(dsp::StateVariableTPTFilterType::lowpass);
-			filter->setCutoffFrequency(frequency);
-			filter->setResonance(resonance);
-            filter->prepare(spec);
+        filter->setType(dsp::StateVariableTPTFilterType::lowpass);
+        filter->setCutoffFrequency(frequency);
+        filter->setResonance(resonance);
+        filter->prepare(spec);
 
-			svfFilters.add(filter.release());
+        svfFilters.add(filter.release());
     }
 }
 
-void LowPass::processBlock(AudioBuffer<float>& buffer, ADSR& envelope) {
+void LowPass::processBlock(AudioBuffer<float>& buffer, ADSR& envelope, int numSamples) {
     const int numCh = buffer.getNumChannels();
-    const int numSamples = buffer.getNumSamples();
 
     for (int ch = 0; ch < numCh; ++ch) {
         auto* channelData = buffer.getWritePointer(ch);
 
         for (int i = 0; i < numSamples; ++i) {
-            svfFilters.getUnchecked(ch)->setCutoffFrequency(updateModulatedFrequency(envelope));
+            if (i % 8 == 0)
+                svfFilters.getUnchecked(ch)->setCutoffFrequency(updateModulatedFrequency(envelope));
             channelData[i] = svfFilters.getUnchecked(ch)->processSample(0, channelData[i]);
         }
     }
@@ -59,7 +59,7 @@ float LowPass::updateModulatedFrequency(ADSR& envelope) {
     double freqToSubtract = jmap(static_cast<double>(envValue), 0.0, 1.0, 500.0, frequency);
     double lowerLimit = std::max(0.0, frequency - 500.0);
     double modulatedFreq = frequency - std::abs(amount) * jlimit(0.0, lowerLimit, freqToSubtract);
-    
+
     modulatedFreq = jlimit(20.0, sampleRate * 0.499, modulatedFreq);
     return static_cast<float>(modulatedFreq);
 }

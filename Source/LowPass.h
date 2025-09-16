@@ -18,7 +18,7 @@ public:
 
 	void prepareToPlay(double sr, dsp::ProcessSpec spec);
 
-	void processBlock(AudioBuffer<float>& buffer, ADSR& envelope);
+	void processBlock(AudioBuffer<float>& buffer, ADSR& envelope, int numSamples);
 
 	void setFrequency(double newValue);
 

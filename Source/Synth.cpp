@@ -42,39 +42,35 @@ void SimpleSynthVoice::renderNextBlock(AudioBuffer<float>& outputBuffer, int sta
 	if (!isVoiceActive())
 		return;
 
+	oscBuffer1.setSize(1, numSamples);
+	oscBuffer2.setSize(1, numSamples);
+
 	// Pulizia del buffer di lavoro
 	// (userò solo i primi "numSamples" del buffer, da sommare poi nel
 	// buffer di output, da startSample, per numSamples campioni)
 	oscillatorBuffer.clear(0, numSamples);
+	oscBuffer1.clear(0, numSamples);
+	oscBuffer2.clear(0, numSamples);
 
 	// Preparazione del ProcessContext per le classi DSP
 	// auto voiceData = oscillatorBuffer.getArrayOfWritePointers();
 	// dsp::AudioBlock<float> audioBlock{ voiceData, 1, (size_t)numSamples };
 	// dsp::ProcessContextReplacing<float> context{ audioBlock };
-
-	// [Solitamente qui ci stanno cose tipo mixer degli oscillatori, filtro e saturazione]
-	juce::AudioBuffer<float> tempBuffer1(1, numSamples);
-	juce::AudioBuffer<float> tempBuffer2(1, numSamples);
-
-	tempBuffer1.clear(0, numSamples);
-	tempBuffer2.clear(0, numSamples);
-
-	dsp::AudioBlock<float> audioBlock1{ tempBuffer1 };
-	dsp::AudioBlock<float> audioBlock2{ tempBuffer2 };
+	dsp::AudioBlock<float> audioBlock1{ oscBuffer1 };
+	dsp::AudioBlock<float> audioBlock2{ oscBuffer2 };
 
 	dsp::ProcessContextReplacing<float> context1{ audioBlock1 };
 	dsp::ProcessContextReplacing<float> context2{ audioBlock2 };
 
+	// [Solitamente qui ci stanno cose tipo mixer degli oscillatori, filtro e saturazione]
 	Oscillators[0].process(context1);
 	Oscillators[1].process(context2);
 
 	// Somma i due buffer nel buffer principale
-	oscillatorBuffer.addFrom(0, 0, tempBuffer1, 0, 0, numSamples, 0.5f * (1 - oscMix));
-	oscillatorBuffer.addFrom(0, 0, tempBuffer2, 0, 0, numSamples, 0.5f * (oscMix));
+	oscillatorBuffer.addFrom(0, 0, oscBuffer1, 0, 0, numSamples, 0.5f * (1 - oscMix));
+	oscillatorBuffer.addFrom(0, 0, oscBuffer2, 0, 0, numSamples, 0.5f * (oscMix));
 
-	filter.processBlock(oscillatorBuffer, filterAdsr);
-
-	normalizeSignal(oscillatorBuffer, numSamples);
+	filter.processBlock(oscillatorBuffer, filterAdsr, numSamples);
 
 	// La modulo in ampiezza con l'ADSR
 	ampAdsr.applyEnvelopeToBuffer(oscillatorBuffer, 0, numSamples);
@@ -117,6 +113,8 @@ void SimpleSynthVoice::prepareToPlay(double sampleRate, int samplesPerBlock) {
 	// stereo è inutile calcolare più di un canale. Ne calcolo 1 e
 	// poi nel PluginProcessor lo copio su tutti i canali in uscita
 	oscillatorBuffer.setSize(1, samplesPerBlock);
+	oscBuffer1.setSize(1, samplesPerBlock);
+	oscBuffer2.setSize(1, samplesPerBlock);
 }
 
 void SimpleSynthVoice::setAttack(const float newValue, bool isAmp) {
@@ -186,19 +184,6 @@ void SimpleSynthVoice::setOscDetune(const float newValue) {
 
 void SimpleSynthVoice::setGain(const float newValue) {
 	gain = newValue;
-}
-
-void SimpleSynthVoice::normalizeSignal(AudioBuffer<float>& oscillatorBuffer, float numSamples) {
-	auto RMS = oscillatorBuffer.getRMSLevel(0,0,numSamples);
-	auto targetRMS = 0.2f/RMS;
-	auto* bufferData = oscillatorBuffer.getWritePointer(0);
-
-	if (RMS < 0.5f) {
-        return;
-    }
-
-	for (int i = 0; i < numSamples; ++i)
-		bufferData[i] *= targetRMS;
 }
 
 void SimpleSynthVoice::setFilterFrequency(double newValue) {
