@@ -22,8 +22,7 @@ void LowPass::processBlock(AudioBuffer<float>& buffer, ADSR& envelope, int numSa
         auto* channelData = buffer.getWritePointer(ch);
 
         for (int i = 0; i < numSamples; ++i) {
-            if (i % 8 == 0)
-                svfFilters.getUnchecked(ch)->setCutoffFrequency(updateModulatedFrequency(envelope));
+            svfFilters.getUnchecked(ch)->setCutoffFrequency(updateModulatedFrequency(envelope));
             channelData[i] = svfFilters.getUnchecked(ch)->processSample(0, channelData[i]);
         }
     }
@@ -54,11 +53,15 @@ void LowPass::reset() {
 }
 
 float LowPass::updateModulatedFrequency(ADSR& envelope) {
-    float envValue = (amount >= 0.0f) ? 1.0f - envelope.getNextSample() : envelope.getNextSample();
+    float envValue = envelope.getNextSample();
 
-    double freqToSubtract = jmap(static_cast<double>(envValue), 0.0, 1.0, 500.0, frequency);
-    double lowerLimit = std::max(0.0, frequency - 500.0);
-    double modulatedFreq = frequency - std::abs(amount) * jlimit(0.0, lowerLimit, freqToSubtract);
+    double modulatedFreq;
+
+    double multFactor = (amount >= 0) ?
+        (1.0 + amount * ((20000.0 / frequency) - 1.0)) : (1.0 + std::abs(amount) * ((20.0 / frequency) - 1.0));
+
+    double modulationFactor = jmap(static_cast<double>(envValue), 0.0, 1.0, 1.0, multFactor);
+    modulatedFreq = frequency * modulationFactor;
 
     modulatedFreq = jlimit(20.0, sampleRate * 0.499, modulatedFreq);
     return static_cast<float>(modulatedFreq);

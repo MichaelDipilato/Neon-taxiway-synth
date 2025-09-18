@@ -35,7 +35,7 @@ namespace Parameters {
 	static const float defaultOscDetune = 0.000f;
 	static const float defaultMasterGain = 1.000f;
 
-	static const float minCutoffFreq = 500.0f;
+	static const float minCutoffFreq = 20.0f;
 
 	const auto oscChoices = StringArray{ "Sine", "Saw", "Square", "Triangle"};
 
@@ -55,9 +55,9 @@ namespace Parameters {
 		params.push_back(std::make_unique<AudioParameterFloat>(ParameterID(nameFiltDcy, id++), "Filter Decay (s)", NormalisableRange<float>(0.0f, 10.0f, 0.001f, 0.3f), defaultFiltDcy));
 		params.push_back(std::make_unique<AudioParameterFloat>(ParameterID(nameFiltSus, id++), "Filter Sustain (amp)", NormalisableRange<float>(0.0f, 1.00f, 0.010f, 0.5f), defaultFiltSus));
 		params.push_back(std::make_unique<AudioParameterFloat>(ParameterID(nameFiltRel, id++), "Filter Release (s)", NormalisableRange<float>(0.0f, 10.0f, 0.001f, 0.3f), defaultFiltRel));
-		params.push_back(std::make_unique<AudioParameterFloat>(ParameterID(nameCutoffFreq, id++), "Cutoff Frequency", NormalisableRange<float>(minCutoffFreq, 7500.0f, 1.0f, 0.3f), defaultCutoffFreq));
-		params.push_back(std::make_unique<AudioParameterFloat>(ParameterID(nameResonance, id++), "Filter Resonance", NormalisableRange<float>(0.1f, 2.0f, 0.001f, 0.3f), defaultResonance));
-		params.push_back(std::make_unique<AudioParameterFloat>(ParameterID(nameEnvAmount, id++), "Envelope Amount", NormalisableRange<float>(-1.0f, 1.0f, 0.01f, 1.0f), defaultResonance));
+		params.push_back(std::make_unique<AudioParameterFloat>(ParameterID(nameCutoffFreq, id++), "Cutoff Frequency", NormalisableRange<float>(minCutoffFreq, 20000.0f, 1.0f, 0.3f), defaultCutoffFreq));
+		params.push_back(std::make_unique<AudioParameterFloat>(ParameterID(nameResonance, id++), "Filter Resonance", NormalisableRange<float>(0.1f, 10.0f, 0.001f, 0.3f), defaultResonance));
+		params.push_back(std::make_unique<AudioParameterFloat>(ParameterID(nameEnvAmount, id++), "Envelope Amount", NormalisableRange<float>(-1.0f, 1.0f, 0.01f, 1.0f), defaultEnvAmount));
 		params.push_back(std::make_unique<AudioParameterFloat>(ParameterID(nameOscMix, id++), "Oscillator Mix", NormalisableRange<float>(0.0f, 1.0f, 0.001f, 1.0f), defaultOscMix));
 		params.push_back(std::make_unique<AudioParameterFloat>(ParameterID(nameOscDetune, id++), "Oscillator Detune", NormalisableRange<float>(0.0f, 1.0f, 0.001f, 0.3f), defaultOscDetune));
 		params.push_back(std::make_unique<AudioParameterFloat>(ParameterID(nameMasterGain, id++), "Volume", NormalisableRange<float>(0.0f, 1.2f, 0.001f, 1.0f), defaultMasterGain));
