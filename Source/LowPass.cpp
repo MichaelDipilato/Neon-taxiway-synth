@@ -22,7 +22,9 @@ void LowPass::processBlock(AudioBuffer<float>& buffer, ADSR& envelope, int numSa
         auto* channelData = buffer.getWritePointer(ch);
 
         for (int i = 0; i < numSamples; ++i) {
-            svfFilters.getUnchecked(ch)->setCutoffFrequency(updateModulatedFrequency(envelope));
+            float modFrequency = updateModulatedFrequency(envelope);
+            if (i % 8 == 0)
+                svfFilters.getUnchecked(ch)->setCutoffFrequency(modFrequency);
             channelData[i] = svfFilters.getUnchecked(ch)->processSample(0, channelData[i]);
         }
     }
@@ -45,11 +47,6 @@ void LowPass::setResonance(double newValue) {
 
 void LowPass::setEnvAmount(double newValue) {
 	amount = newValue;
-}
-
-void LowPass::reset() {
-    for (int i = 0; i < MAX_NUM_CH; ++i)
-        svfFilters.getUnchecked(i)->reset();
 }
 
 float LowPass::updateModulatedFrequency(ADSR& envelope) {

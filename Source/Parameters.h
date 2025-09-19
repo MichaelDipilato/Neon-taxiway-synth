@@ -22,11 +22,11 @@ namespace Parameters {
 	static const int defaultWave = 0;
 	static const float defaultAmpAtk = 0.000f;
 	static const float defaultAmpDcy = 0.025f;
-	static const float defaultAmpSus = 0.600f;
+	static const float defaultAmpSus = 1.000f;
 	static const float defaultAmpRel = 1.000f;
 	static const float defaultFiltAtk = 0.000f;
 	static const float defaultFiltDcy = 0.025f;
-	static const float defaultFiltSus = 0.600f;
+	static const float defaultFiltSus = 1.000f;
 	static const float defaultFiltRel = 1.000f;
 	static const float defaultCutoffFreq = 1000.0f;
 	static const float defaultResonance = 0.700f;

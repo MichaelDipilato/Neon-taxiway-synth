@@ -9,9 +9,8 @@ class LowPass {
 public:
 	LowPass(double defaultFrequency = 1000.0, double defaultResonance = 0.7, double defaultAmt = 1.0)
 		: frequency(defaultFrequency), resonance(defaultResonance), amount(defaultAmt) {
-		for (int i = 0; i < MAX_NUM_CH; ++i) {
+		for (int i = 0; i < MAX_NUM_CH; ++i)
 			svfFilters.add(std::make_unique<dsp::StateVariableTPTFilter<float>>());
-		}
 	}
 
 	~LowPass() {}
@@ -25,8 +24,6 @@ public:
 	void setResonance(double newValue);
 
 	void setEnvAmount(double newValue);
-
-	void reset();
 
 private:
 	float updateModulatedFrequency(ADSR& envelope);

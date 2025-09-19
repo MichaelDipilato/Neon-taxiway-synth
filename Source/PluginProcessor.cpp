@@ -7,15 +7,12 @@ NeonTaxiwayAudioProcessor::NeonTaxiwayAudioProcessor()
     : AudioProcessor(BusesProperties().withOutput("Output", juce::AudioChannelSet::stereo(), true)), // Niente input
     parameters(*this, nullptr, "SynthSettings", { Parameters::createParameterLayout() }) {
 
-    // Per prima cosa aggiungo uno o più SynthSound al synth
     mySynth.addSound(new MySynthSound());
 
-    // Poi aggiungo tante voci di polifonia quante voglio che possa gestirne
     for (int v = 0; v < NUM_VOICES; ++v)
         mySynth.addVoice(new SimpleSynthVoice(Parameters::defaultAmpAtk, Parameters::defaultAmpDcy, Parameters::defaultAmpSus, Parameters::defaultAmpRel,
                                               Parameters::defaultFiltAtk, Parameters::defaultFiltDcy, Parameters::defaultFiltSus, Parameters::defaultFiltRel));
 
-    // E poi attacco il processor ai parametri, come al solito
     Parameters::addListenerToAllParameters(parameters, this);
 }
 
@@ -31,8 +28,6 @@ void NeonTaxiwayAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
 }
 
 void NeonTaxiwayAudioProcessor::releaseResources() {
-    // When playback stops, you can use this as an opportunity to free up any
-    // spare memory, etc.
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -41,15 +36,10 @@ bool NeonTaxiwayAudioProcessor::isBusesLayoutSupported (const BusesLayout& layou
     juce::ignoreUnused (layouts);
     return true;
   #else
-    // This is the place where you check if the layout is supported.
-    // In this template code we only support mono or stereo.
-    // Some plugin hosts, such as certain GarageBand versions, will only
-    // load plugins that support stereo bus layouts.
     if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
      && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
         return false;
 
-    // This checks if the input layout matches the output layout
    #if ! JucePlugin_IsSynth
     if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
         return false;
@@ -64,13 +54,10 @@ void NeonTaxiwayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     juce::ScopedNoDenormals noDenormals;
     const auto numSamples = buffer.getNumSamples();
 
-    // Pulisco il buffer (non c'è input, e le SynthVoice sommano, non sovrascrivono)
     buffer.clear();
 
-    // Lascio che la classe Synthsiser faccia le sue magie
     mySynth.renderNextBlock(buffer, midiMessages, 0, numSamples);
 
-    // Se l'output è stereo copio sul secondo canale il contenuto del primo
     if (getTotalNumOutputChannels() == 2)
         buffer.copyFrom(1, 0, buffer, 0, 0, numSamples);
 }
@@ -96,16 +83,13 @@ void NeonTaxiwayAudioProcessor::setStateInformation (const void* data, int sizeI
             parameters.replaceState(ValueTree::fromXml(*xmlState));
 }
 
-// This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter() {
     return new NeonTaxiwayAudioProcessor();
 }
 
 void NeonTaxiwayAudioProcessor::parameterChanged(const String& paramID, float newValue) {
-    // Il cambio di parametri va propagato a tutte le voci di polifonia del synth
     for (int v = 0; v < mySynth.getNumVoices(); ++v)
-        if (auto voice = dynamic_cast<SimpleSynthVoice*>(mySynth.getVoice(v)))
-        {
+        if (auto voice = dynamic_cast<SimpleSynthVoice*>(mySynth.getVoice(v))) {
             if (paramID == Parameters::nameAmpAtk)
                 voice->setAttack(newValue, true);
 
