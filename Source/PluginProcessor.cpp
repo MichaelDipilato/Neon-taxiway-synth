@@ -4,7 +4,7 @@
 #define NUM_VOICES 8
 
 NeonTaxiwayAudioProcessor::NeonTaxiwayAudioProcessor()
-    : AudioProcessor(BusesProperties().withOutput("Output", juce::AudioChannelSet::stereo(), true)), // Niente input
+    : AudioProcessor(BusesProperties().withOutput("Output", juce::AudioChannelSet::stereo(), true)),
     parameters(*this, nullptr, "SynthSettings", { Parameters::createParameterLayout() }) {
 
     mySynth.addSound(new MySynthSound());
