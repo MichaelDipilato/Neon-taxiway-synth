@@ -10,36 +10,49 @@ The synth was built using the [JUCE framework](https://github.com/juce-framework
 
 ## Features
 
-- 2 Oscillators
-- Low-pass
-- Filter ADSR envelope with amount control
-- Amplitude ADSR envelope
+### Oscillators
 
-## Oscillators
+- 2 Oscillators with selectable waveforms:
+  - Sine
+  - Sawtooth
+  - Square
+  - Triangle
 
-The synthesizer features two oscillators, each capable of producing four waveforms:
-- Sine
-- Sawtooth
-- Square
-- Triangle
+- Detune control (especially effective when both use the sawtooth waveform)
+- Mix control
 
-You can detune the oscillators (especially effective when both use the sawtooth waveform) and blend them using the mix control.
+### Filter
 
-## Filter
+Low-pass filter with:
+- Cutoff (20 Hz - 20 KHz)
+- Resonance
+- Envelope amount
+- Dedicated ADSR envelope for filter modulation
 
-Neon Taxiway includes a simple low-pass filter with adjustable:
-- Cutoff frequency
-- Resonance 
+### Amplifier
+- Independent ADSR envelope for amplitude shaping
+- Master volume control
 
-The filter is modulated by an ADSR envelope, with a dedicated control for the envelope amount. Additionally, there's a second ADSR envelope for the amplifier.
+## Installation
 
-## OS Compatibility
-
-This synth was developed on Linux, but also works on Windows. In order to install Neon Taxiway, you can clone this repo, open the projucer project and then compile it for yourself using your preferred platform.
+This synth was developed on Linux, but also works on Windows. 
+To install:
+- Clone this repository: ``` git clone https://github.com/MichaelDipilato/Neon-taxiway-synth.git ```
+- Open ```NeonTaxiway.jucer``` using the Projucer app
+- Export to your preferred IDE (e.g., Visual Studio, Xcode)
+- Compile and run
 
 ## Future improvements
 
 - Remove aliasing from oscillators
-- Add and LFO
+- Add an LFO
 - Add a "magic" button that applies an effect (chorus maybe?) 
 - Publish a release here on GitHub
+
+## License
+
+This project is licensed under the GNU General Public License v3.0.
+
+You are free to use, modify, and distribute this software under the terms of the GPL-3.0 license.  
+See the [LICENSE](LICENSE) file for full details.
+
